@@ -1,5 +1,10 @@
 package repository
 
+import (
+	"github.com/jmoiron/sqlx"
+	_ "github.com/lib/pq"
+)
+
 type Promocode interface {
 }
 
@@ -11,6 +16,6 @@ type Repository struct {
 	Reward
 }
 
-func NewRepository() *Repository {
+func NewRepository(db *sqlx.DB) *Repository {
 	return &Repository{}
 }

@@ -13,23 +13,46 @@ import (
 
 	"github.com/joho/godotenv"
 	"github.com/labstack/echo/v4"
+	"github.com/spf13/viper"
 )
 
 func init() {
-	err := godotenv.Load("../.env")
+	err := godotenv.Load(".env")
 	if err != nil {
 		log.Fatalf("error occured while loading .env file: %v", err)
+	}
+
+	if err := initConfig(); err != nil {
+		log.Fatalf("error occured while reading config: %s", err.Error())
 	}
 
 }
 
 func main() {
-	port := os.Getenv("PORT")
+	port := viper.GetString("port")
 	if port == "" {
-		log.Fatal("Env var 'PORT' must be set")
+		log.Fatal("value of 'port' must be set in config")
 	}
 
-	repos := repository.NewRepository()
+	db_password := os.Getenv("DB_PASSWORD")
+	if db_password == "" {
+		log.Fatal("value of 'DB_PASSWORD' must be set in .env")
+	}
+
+	db, err := repository.NewPostgresDB(repository.Config{
+		Host:     viper.GetString("db.host"),
+		Port:     viper.GetString("db.port"),
+		Username: viper.GetString("db.username"),
+		Password: db_password,
+		DBname:   viper.GetString("db.dbname"),
+		SSLmode:  viper.GetString("db.sslmode"),
+	})
+
+	if err != nil {
+		log.Fatalf("error occured while connecting DB: %s", err.Error())
+	}
+
+	repos := repository.NewRepository(db)
 	services := service.NewService(repos)
 	handlers := handler.NewHandler(services)
 
@@ -53,4 +76,10 @@ func main() {
 		e.Logger.Fatal(err)
 
 	}
+}
+
+func initConfig() error {
+	viper.AddConfigPath("configs")
+	viper.SetConfigName("config")
+	return viper.ReadInConfig()
 }
