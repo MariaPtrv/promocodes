@@ -6,6 +6,10 @@ func NewReward(c echo.Context) error {
 	return c.JSON(200, "NewReward reward")
 }
 
+func GetReward(c echo.Context) error {
+	return c.JSON(200, "Get reward")
+}
+
 func UpdateReward(c echo.Context) error {
 	return c.JSON(200, "UpdateReward reward")
 }

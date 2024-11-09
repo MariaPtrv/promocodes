@@ -2,6 +2,8 @@ package main
 
 import (
 	handler "admin/pkg/handlers"
+	"admin/pkg/repository"
+	"admin/pkg/service"
 	"context"
 	"log"
 	"net/http"
@@ -27,32 +29,12 @@ func main() {
 		log.Fatal("Env var 'PORT' must be set")
 	}
 
+	repos := repository.NewRepository()
+	services := service.NewService(repos)
+	handlers := handler.NewHandler(services)
+
 	e := echo.New()
-
-	admin := e.Group("/admin")
-
-	admin.GET("/", func(c echo.Context) error {
-		return c.String(200, "Admin here")
-	})
-	promocode := admin.Group("/promocode")
-
-	promocode.POST("/new", handler.NewPromocode)
-
-	promocode.DELETE("/:id", handler.DeletePromocode)
-
-	promocode.PUT("/:id", handler.UpdatePromocode)
-
-	reward := admin.Group("/reward")
-
-	reward.POST("/new", handler.NewReward)
-
-	reward.DELETE("/:id", func(c echo.Context) error {
-		return c.String(200, "Delete reward :id")
-	})
-
-	reward.PUT("/:id", func(c echo.Context) error {
-		return c.String(200, "Update reward :id")
-	})
+	handlers.InitRoutes(e)
 
 	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt)
 	defer stop()

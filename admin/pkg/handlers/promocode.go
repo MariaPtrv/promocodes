@@ -6,6 +6,10 @@ func NewPromocode(c echo.Context) error {
 	return c.String(200, "NewPromocode")
 }
 
+func GetPromocode(c echo.Context) error {
+	return c.String(200, "Promocode")
+}
+
 func UpdatePromocode(c echo.Context) error {
 	return c.String(200, "NewPromocode")
 }
