@@ -1,0 +1,31 @@
+version: 'v2.29.2-desktop.2'
+services:
+  db:
+    container_name: postgres
+    image: postgres
+    restart: always
+    environment:
+      POSTGRES_PASSWORD: mysecretpassword
+      POSTGRES_DB: mydb
+      POSTGRES_USER: myuser
+    volumes:
+      - ./.database/postgres/data:/var/lib/postgresql/data
+    ports:
+      - 5432:5432
+    networks:
+      - net
+
+  admin:
+    restart: always
+    build: ./admin/
+    ports:
+      - 8000:8000
+    depends_on:
+      - db
+    networks:
+      - net
+    command: [ "./wait-for-it/wait-for-it.sh", "db:5432", "--", "go", "run", "./cmd/main.go" ]
+
+networks:
+  net:
+    driver: bridge
