@@ -5,6 +5,7 @@ import (
 	"admin/pkg/repository"
 	"admin/pkg/service"
 	"context"
+	"fmt"
 	"log"
 	"net/http"
 	"os"
@@ -12,6 +13,7 @@ import (
 	"time"
 
 	"github.com/joho/godotenv"
+	"github.com/labstack/echo/v4/middleware"
 	"github.com/labstack/echo/v4"
 	"github.com/spf13/viper"
 )
@@ -52,11 +54,14 @@ func main() {
 		log.Fatalf("error occured while connecting DB: %s", err.Error())
 	}
 
+	fmt.Printf("DB %s connected %s:%s", viper.GetString("db.dbname"), viper.GetString("db.host"), viper.GetString("db.port"))
+
 	repos := repository.NewRepository(db)
 	services := service.NewService(repos)
 	handlers := handler.NewHandler(services)
 
 	e := echo.New()
+	e.Use(middleware.Logger())
 	handlers.InitRoutes(e)
 
 	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt)
