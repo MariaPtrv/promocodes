@@ -4,6 +4,7 @@ services:
     container_name: postgres
     image: postgres
     restart: always
+    build: ./db/
     environment:
       POSTGRES_PASSWORD: mysecretpassword
       POSTGRES_DB: mydb
@@ -24,7 +25,7 @@ services:
       - db
     networks:
       - net
-    command: [ "./wait-for-it/wait-for-it.sh", "db:5432", "--", "go", "run", "./cmd/main.go" ]
+    command: [ "./wait-for-it/wait-for-it.sh", "db:5432","-t" ,"20", "--", "go", "run", "./cmd/main.go" , "'postgres://myuser:mysecretpassword@localhost:5432/mydb?sslmode=disable'"]
 
 networks:
   net:
