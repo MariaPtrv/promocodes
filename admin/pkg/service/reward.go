@@ -20,3 +20,7 @@ func (s *RewardService) CreateReward(r t.Reward) (int, error) {
 func (s *RewardService) DeleteReward(r t.Reward) error {
 	return s.repo.DeleteReward(r)
 }
+
+func (s *RewardService) GetRewardById(r t.Reward) (t.Reward, error) {
+	return s.repo.GetRewardById(r)
+}

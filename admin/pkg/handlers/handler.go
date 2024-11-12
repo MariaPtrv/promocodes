@@ -22,13 +22,20 @@ func (h *Handler) InitRoutes(e *echo.Echo) {
 		return c.String(200, "Admin here")
 	})
 
-	promocode := admin.Group("/promocode")
+	promocodes := admin.Group("/promocodes")
+	//promocodes.GET("/", GetPromocode)
+
+	promocode := promocodes.Group("/promocodes")
 	promocode.POST("/", NewPromocode)
 	promocode.GET("/", GetPromocode)
 	promocode.DELETE("/", DeletePromocode)
 	promocode.PUT("/", UpdatePromocode)
 
-	reward := admin.Group("/reward")
+	rewards := admin.Group("/rewards")
+	rewards.GET("/", h.GetRewards)
+
+	reward := rewards.Group("/reward")
 	reward.POST("/", h.NewReward)
 	reward.DELETE("/", h.DeleteReward)
+	reward.GET("/", h.GetRewardById)
 }
