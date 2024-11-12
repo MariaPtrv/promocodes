@@ -12,9 +12,9 @@ type Promocode struct {
 }
 
 type Reward struct {
-	Id    int    `json:"id"`
+	Id    int    `json:"id,omitempty"`
 	Title string `json:"title"`
-	Desc  string `json:"desc"`
+	Desc  string `json:"description,omitempty"`
 }
 
 type User struct {

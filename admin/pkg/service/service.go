@@ -1,6 +1,9 @@
 package service
 
-import "admin/pkg/repository"
+import (
+	types "admin/pkg"
+	"admin/pkg/repository"
+)
 
 type Promocode interface {
 	CreatePromocode()
@@ -10,10 +13,8 @@ type Promocode interface {
 }
 
 type Reward interface {
-	CreateReward(title, desc string) (int, error)
-	// DeleteReward()
-	// UpdateReward()
-	// GetReward()
+	CreateReward(r types.Reward) (int, error)
+	DeleteReward(r types.Reward) error
 }
 
 type Service struct {

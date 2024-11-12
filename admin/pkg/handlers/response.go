@@ -13,7 +13,7 @@ type statusResponse struct {
 	Status string `json:"status"`
 }
 
-func newErrorResponse(statusCode int, message string) {
+func newErrorResponse(statusCode int, message string) *echo.HTTPError {
 	log.Error(message)
-	echo.NewHTTPError(statusCode, errorResponse{message})
+	return echo.NewHTTPError(statusCode, errorResponse{message})
 }

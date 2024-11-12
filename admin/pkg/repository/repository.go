@@ -1,6 +1,8 @@
 package repository
 
 import (
+	t "admin/pkg"
+
 	"github.com/jmoiron/sqlx"
 	_ "github.com/lib/pq"
 )
@@ -16,7 +18,8 @@ type Promocode interface {
 }
 
 type Reward interface {
-	CreateReward(title, desc string) (int, error)
+	CreateReward(t.Reward) (int, error)
+	DeleteReward(t.Reward) error
 }
 
 type Repository struct {
@@ -25,5 +28,7 @@ type Repository struct {
 }
 
 func NewRepository(db *sqlx.DB) *Repository {
-	return &Repository{}
+	return &Repository{
+		Reward: NewRewardPostgres(db),
+	}
 }
