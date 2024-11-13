@@ -24,7 +24,8 @@
 - база данных
 
 
-///схема
+<img width="1214" alt="image" src="https://github.com/user-attachments/assets/8135ff1d-8c2e-4d0e-895d-d204aac147d4">
+
 
 ## Структура проекта
 
