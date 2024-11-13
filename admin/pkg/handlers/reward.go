@@ -71,3 +71,14 @@ func (h *Handler) GetRewardById(c echo.Context) error {
 
 	return c.JSON(200, rwrd)
 }
+
+func (h *Handler) GetRewards(c echo.Context) error {
+	log.Printf("handler-reward: GetRewards\n")
+
+	rwrd, err := h.services.Reward.GetRewards()
+	if err != nil {
+		return newErrorResponse(http.StatusBadRequest, err.Error())
+	}
+
+	return c.JSON(200, rwrd)
+}

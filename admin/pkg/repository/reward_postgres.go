@@ -9,15 +9,15 @@ import (
 	"github.com/jmoiron/sqlx"
 )
 
-type RewardItemPostgres struct {
+type RewardPostgres struct {
 	db *sqlx.DB
 }
 
-func NewRewardPostgres(db *sqlx.DB) *RewardItemPostgres {
-	return &RewardItemPostgres{db: db}
+func NewRewardPostgres(db *sqlx.DB) *RewardPostgres {
+	return &RewardPostgres{db: db}
 }
 
-func (r *RewardItemPostgres) CreateReward(reward t.Reward) (int, error) {
+func (r *RewardPostgres) CreateReward(reward t.Reward) (int, error) {
 	tx, err := r.db.Begin()
 	if err != nil {
 		return 0, err
@@ -39,7 +39,7 @@ func (r *RewardItemPostgres) CreateReward(reward t.Reward) (int, error) {
 	return itemId, tx.Commit()
 }
 
-func (r *RewardItemPostgres) DeleteReward(reward t.Reward) error {
+func (r *RewardPostgres) DeleteReward(reward t.Reward) error {
 	tx, err := r.db.Begin()
 	if err != nil {
 		return err
@@ -59,7 +59,7 @@ func (r *RewardItemPostgres) DeleteReward(reward t.Reward) error {
 	return tx.Commit()
 }
 
-func (r *RewardItemPostgres) GetRewardById(reward t.Reward) (t.Reward, error) {
+func (r *RewardPostgres) GetRewardById(reward t.Reward) (t.Reward, error) {
 	tx, err := r.db.Begin()
 	if err != nil {
 		return t.Reward{}, err
@@ -78,4 +78,25 @@ func (r *RewardItemPostgres) GetRewardById(reward t.Reward) (t.Reward, error) {
 	}
 
 	return rdb, tx.Commit()
+}
+
+func (r *RewardPostgres) GetRewards() ([]t.Reward, error) {
+	tx, err := r.db.Begin()
+	if err != nil {
+		return []t.Reward{}, err
+	}
+
+	log.Printf("repository-rewards: GetRewards\n")
+
+	query := fmt.Sprintf("SELECT * FROM %s", rewardTable)
+
+	var rewards []t.Reward
+
+	err = r.db.Select(&rewards, query)
+	if err != nil {
+		tx.Rollback()
+		return []t.Reward{}, err
+	}
+
+	return rewards, tx.Commit()
 }

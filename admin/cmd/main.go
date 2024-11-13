@@ -55,7 +55,7 @@ func main() {
 
 	e := echo.New()
 	e.Use(middleware.LoggerWithConfig(middleware.LoggerConfig{
-		Format: "${time_rfc3339} method=${method} uri=${uri} status=${status}\n",
+		Format: "${time_rfc3339} method: ${method} uri: ${uri} status: ${status} ${error}\n",
 	}))
 
 	log.Printf("DB %s connected %s:%s", viper.GetString("db.dbname"), viper.GetString("db.host"), viper.GetString("db.port"))
@@ -68,14 +68,13 @@ func main() {
 
 	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt)
 	defer stop()
-	// Start server
+
 	go func() {
 		if err := e.Start(":8000"); err != nil && err != http.ErrServerClosed {
 			e.Logger.Fatal("shutting down the server")
 		}
 	}()
 
-	//Wait for interrupt signal to gracefully shutdown the server with a timeout of 10 seconds.
 	<-ctx.Done()
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()

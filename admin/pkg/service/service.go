@@ -6,31 +6,28 @@ import (
 )
 
 type Promocode interface {
-	CreatePromocode()
-	DeletePromocode()
-	UpdatePromocode()
-	GetPromocode()
+	CreatePromocode(p types.Promocode) (int, error)
+	DeletePromocode(p types.Promocode) error
+	UpdatePromocode(p types.Promocode) (int, error)
+	GetPromocodeById(p types.Promocode) (types.Promocode, error)
+	GetPromocodes() ([]types.Promocode, error)
 }
 
 type Reward interface {
 	CreateReward(r types.Reward) (int, error)
 	DeleteReward(r types.Reward) error
 	GetRewardById(r types.Reward) (types.Reward, error)
-}
-
-type Rewards interface {
 	GetRewards() ([]types.Reward, error)
 }
 
 type Service struct {
 	Promocode
 	Reward
-	Rewards
 }
 
 func NewService(repos *repository.Repository) *Service {
 	return &Service{
-		Reward: NewRewardService(repos.Reward),
-		Rewards: NewRewardsService(repos.Rewards),
+		Reward:    NewRewardService(repos.Reward),
+		Promocode: NewPromocodeService(repos.Promocode),
 	}
 }

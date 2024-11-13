@@ -15,27 +15,28 @@ const (
 )
 
 type Promocode interface {
-}
-
-type Rewards interface {
-	GetRewards() ([]t.Reward, error)
+	CreatePromocode(p t.Promocode) (int, error)
+	GetPromocodeById(p t.Promocode) (t.Promocode, error)
+	UpdatePromocode(p t.Promocode) (int, error)
+	DeletePromocode(t.Promocode) error
+	GetPromocodes() ([]t.Promocode, error)
 }
 
 type Reward interface {
 	CreateReward(t.Reward) (int, error)
 	DeleteReward(t.Reward) error
 	GetRewardById(t.Reward) (t.Reward, error)
+	GetRewards() ([]t.Reward, error)
 }
 
 type Repository struct {
 	Promocode
 	Reward
-	Rewards
 }
 
 func NewRepository(db *sqlx.DB) *Repository {
 	return &Repository{
-		Reward:  NewRewardPostgres(db),
-		Rewards: NewRewardsPostgres(db),
+		Reward:    NewRewardPostgres(db),
+		Promocode: NewPromocodePostgres(db),
 	}
 }
