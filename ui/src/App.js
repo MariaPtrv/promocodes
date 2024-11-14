@@ -16,7 +16,6 @@ function App() {
   }
 
   async function getServerSideProps(promocode) {
-    // const url = "http://localhost:3001/promocodes";
     const url = "http://localhost:8001/promocodes/promocode/use";
 
     try {
