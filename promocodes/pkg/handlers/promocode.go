@@ -91,5 +91,14 @@ func (h *Handler) UsePromocode(c echo.Context) error {
 		return newErrorResponse(http.StatusBadRequest, err.Error())
 	}
 
+	remain_uses := *prmcd.Remain_uses - 1
+	_, err = h.services.Promocode.UpdatePromocode(t.Promocode{
+		Id:          prmcd.Id,
+		Remain_uses: &(remain_uses),
+	})
+	if err != nil {
+		return newErrorResponse(http.StatusBadRequest, err.Error())
+	}
+
 	return c.JSON(200, rwrd)
 }

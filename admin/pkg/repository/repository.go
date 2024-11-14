@@ -8,7 +8,6 @@ import (
 )
 
 const (
-	userTable      = "user"
 	rewardTable    = "reward"
 	rewardsTable   = "rewards"
 	promocodeTable = "promocode"
