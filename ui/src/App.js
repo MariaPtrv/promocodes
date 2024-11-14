@@ -17,25 +17,45 @@ function App() {
 
   async function getServerSideProps(promocode) {
     // const url = "http://localhost:3001/promocodes";
-    const url = "http://localhost:8000/admin/promocodes/promocode/";
+    const url = "http://localhost:8001/promocodes/promocode/use";
 
     try {
       const myHeaders = new Headers();
-myHeaders.append("Content-Type", "application/json");
+      myHeaders.append("Content-Type", "application/json");
       const response = await fetch(url, {
         headers: myHeaders,
         method: "POST",
-        body: JSON.stringify({     "promocode": "223232",
-          "reward_id": 5,
-          "max_uses": 4 }),
+        body: JSON.stringify({
+          "promocode": promocode,
+          "user_id": 123,
+        }),
       });
       if (!response.ok) {
+        setMessage("Промокод не применен 😒 Проверьте и попробуйте еще раз.")
         throw new Error(`Response status: ${response.status}`);
       }
 
       const json = await response.json();
       console.log(json);
-      
+
+     if (json.id) {
+        setMessage("Промокод применен 😊. Этот промокод " + json.description.toLowerCase())
+      } else {
+        switch (json.status) {
+          case 0:
+            setMessage("Промокод уже был применен ранеe 😊")
+            break;
+          case 1:
+            setMessage("Сроки применения промокода истекли ⌛️")
+            break;
+          case 2:
+            setMessage("Промокод больше не применяется.")
+            break;
+          default:
+            setMessage("Промокод не применен 😒 Проверьте и попробуйте еще раз.")
+        }
+      }
+
     } catch (error) {
       console.error(error.message);
     }
