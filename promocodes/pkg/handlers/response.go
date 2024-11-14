@@ -14,7 +14,7 @@ const (
 )
 
 type usePromocodeReq struct {
-	user_id int `json:"user_id"`
+	User_id int `json:"user_id"`
 	t.Promocode
 }
 
