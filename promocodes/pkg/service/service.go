@@ -5,6 +5,8 @@ import (
 	"promocodes/pkg/repository"
 )
 
+//go:generate mockgen -source=service.go -destination=mocks/mock.go
+
 type Promocode interface {
 	GetPromocode(p t.Promocode) (t.Promocode, error)
 	UpdatePromocode(p t.Promocode) (int, error)
