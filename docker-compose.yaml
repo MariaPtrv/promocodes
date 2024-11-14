@@ -24,7 +24,18 @@ services:
       - db
     networks:
       - net
-    command: [ "./wait-for-it/wait-for-it.sh", "db:5432","-t" ,"20", "--", "go", "run", "./cmd/main.go" , "migrate -path migrations -database postgres://postgres:mysecretpassword@localhost:5432/mydb?sslmode=disable up"]
+    command: [ "./wait-for-it/wait-for-it.sh", "db:5432","-t" ,"20", "--", "go", "run", "./cmd/main.go" ]
+
+  promocodes:
+    restart: always
+    build: ./promocodes/
+    ports:
+      - 8001:8001
+    depends_on:
+      - db
+    networks:
+      - net
+    command: [ "./wait-for-it/wait-for-it.sh", "db:5432","-t" ,"20", "--", "go", "run", "./cmd/main.go"]
 
 networks:
   net:
