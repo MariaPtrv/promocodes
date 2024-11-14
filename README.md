@@ -258,7 +258,8 @@
 Это небольшой прототип, который запускается локально и позволяет обращаться к сервису `promocodes` для применения промокода. 
 
 
-<img width="557" alt="image" src="https://github.com/user-attachments/assets/59bee380-e4f0-4ead-a5ce-7c78fe2f0bce">
+<img width="905" alt="image" src="https://github.com/user-attachments/assets/d9e52607-2748-41b8-a031-cae7cf4773ef">
+
 
 
 # Инструкция для запуска
