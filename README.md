@@ -259,4 +259,4 @@
     make run
 
 > [!TIP]
-> Для удобства использования admin в проекте находится JSON файл:  `Promocodes.postman_collection.json`, который можно импортировать в Postman. 
+> Для удобства управления сервисом admin в проекте находится JSON файл:  `Promocodes.postman_collection.json`, который можно импортировать в Postman. 
