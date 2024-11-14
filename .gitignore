@@ -25,3 +25,8 @@ go.work.sum
 .env
 
 .database
+
+# dependencies
+/node_modules
+/.pnp
+.pnp.js
