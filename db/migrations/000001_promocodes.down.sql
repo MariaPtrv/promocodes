@@ -1,0 +1,5 @@
+DROP TABLE IF EXISTS rewards;
+
+DROP TABLE IF EXISTS promocode;
+
+DROP TABLE IF EXISTS reward;

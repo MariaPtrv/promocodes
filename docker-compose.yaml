@@ -10,12 +10,11 @@ services:
       POSTGRES_DB: mydb
       POSTGRES_USER: myuser
     volumes:
-      - ./.database/postgres/data:/var/lib/postgresql/data
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql 
     ports:
       - 5432:5432
     networks:
       - net
-
   admin:
     restart: always
     build: ./admin/
@@ -25,7 +24,7 @@ services:
       - db
     networks:
       - net
-    command: [ "./wait-for-it/wait-for-it.sh", "db:5432","-t" ,"20", "--", "go", "run", "./cmd/main.go" , "'postgres://myuser:mysecretpassword@localhost:5432/mydb?sslmode=disable'"]
+    command: [ "./wait-for-it/wait-for-it.sh", "db:5432","-t" ,"20", "--", "go", "run", "./cmd/main.go" , "migrate -path migrations -database postgres://postgres:mysecretpassword@localhost:5432/mydb?sslmode=disable up"]
 
 networks:
   net:
