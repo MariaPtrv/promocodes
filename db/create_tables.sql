@@ -1,12 +1,12 @@
 CREATE TABLE reward (
     id serial PRIMARY KEY,
-    title VARCHAR (255) NOT NULL,
+    title VARCHAR (255) NOT NULL UNIQUE,
     description VARCHAR (255)
 );
 
 CREATE TABLE promocode (
     id serial PRIMARY KEY,
-    promocode VARCHAR (255),
+    promocode VARCHAR (255) UNIQUE,
     reward_id integer REFERENCES reward (id) ON DELETE CASCADE,
     expires timestamp without time zone DEFAULT NULL,
     max_uses integer NOT NULL,
