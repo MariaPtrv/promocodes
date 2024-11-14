@@ -22,7 +22,7 @@
 										"header": [],
 										"body": {
 											"mode": "raw",
-											"raw": "{\n    \"promocode\": \"223232\",\n    \"reward_id\": 15,\n    \"max_uses\": 4\n}",
+											"raw": "{\n    \"promocode\": \"GET_DIAMONDS_5\",\n    \"reward_id\": 1,\n    \"max_uses\": 2\n}",
 											"options": {
 												"raw": {
 													"language": "json"
@@ -180,7 +180,7 @@
 										"header": [],
 										"body": {
 											"mode": "raw",
-											"raw": "{\n    \"title\": \"22\",\n    \"description\": \"Добавляет 1 алмазов игроку\"\n}",
+											"raw": "{\n    \"title\": \"GET_DIAMONDS_5_REWARD\",\n    \"description\": \"Добавляет 5 алмазов игроку\"\n}",
 											"options": {
 												"raw": {
 													"language": "json"
@@ -214,7 +214,7 @@
 										"header": [],
 										"body": {
 											"mode": "raw",
-											"raw": "{\n    \"id\": 15\n}",
+											"raw": "{\n    \"id\": 1\n}",
 											"options": {
 												"raw": {
 													"language": "json"
@@ -245,7 +245,7 @@
 										"header": [],
 										"body": {
 											"mode": "raw",
-											"raw": "{\n    \"title\": \"15\"\n}",
+											"raw": "{\n    \"title\": \"GETDIAMONDS_5\"\n}",
 											"options": {
 												"raw": {
 													"language": "json"
@@ -293,6 +293,41 @@
 							"response": []
 						}
 					]
+				}
+			]
+		},
+		{
+			"name": "promocodes",
+			"item": [
+				{
+					"name": "/promocodes/promocode/use",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"user_id\": 5, \n    \"promocode\" : \"GET_DIAMONDS_5\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8001/promocodes/promocode/use",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8001",
+							"path": [
+								"promocodes",
+								"promocode",
+								"use"
+							]
+						}
+					},
+					"response": []
 				}
 			]
 		}
