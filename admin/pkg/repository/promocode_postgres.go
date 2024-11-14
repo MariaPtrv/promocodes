@@ -39,7 +39,7 @@ func (p *PromocodePostgres) CreatePromocode(promocode t.Promocode) (int, error) 
 	}
 
 	var s time.Time
-	if s.Unix() == promocode.Expires.Unix() {
+	if promocode.Expires != nil && s.Unix() == promocode.Expires.Unix() {
 		query = fmt.Sprintf("UPDATE %s SET expires = NULL WHERE id = $1", promocodeTable)
 		_, err = tx.Exec(query, itemId)
 

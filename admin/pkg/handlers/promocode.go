@@ -21,7 +21,7 @@ func (h *Handler) NewPromocode(c echo.Context) error {
 		return newErrorResponse(http.StatusBadRequest, "wrong json")
 	}
 
-	if *p.Max_uses < 1 {
+	if p.Max_uses != nil && *p.Max_uses < 1 {
 		return newErrorResponse(http.StatusBadRequest, "Invalid Max_uses value. Max_uses must be greater than or equal to 1")
 	}
 
@@ -33,7 +33,7 @@ func (h *Handler) NewPromocode(c echo.Context) error {
 	}
 
 	var st time.Time
-	if *p.Expires != st {
+	if p.Expires != nil && *p.Expires != st {
 		promocode.Expires = p.Expires
 
 		st = time.Now()
@@ -87,7 +87,7 @@ func (h *Handler) DeletePromocode(c echo.Context) error {
 		Promocode: r.Promocode,
 	}
 
-	log.Printf("handler-promocode: DeletePromocode promocode id: %s\n", promocode.Promocode)
+	log.Printf("handler-promocode: DeletePromocode promocode id: %d\n", *promocode.Id)
 	err := h.services.Promocode.DeletePromocode(promocode)
 	if err != nil {
 		return newErrorResponse(http.StatusBadRequest, err.Error())
