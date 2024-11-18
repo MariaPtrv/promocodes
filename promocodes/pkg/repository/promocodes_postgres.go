@@ -99,66 +99,13 @@ func (p *PromocodesPostgres) ApplyPromocodeAction(record t.RewardsRecord, promoc
 		return err
 	}
 
-	setValues := make([]string, 0)
-	args := make([]interface{}, 0)
-	argId := 1
+	query = fmt.Sprintf(`UPDATE %s promocode SET remain_uses=$1 WHERE promocode.id = $2`,
+		promocodeTable)
 
-	if promocode.Promocode != nil {
-		setValues = append(setValues, fmt.Sprintf("promocode=$%d", argId))
-		args = append(args, *promocode.Promocode)
-		argId++
-	}
-
-	if promocode.Reward_id != nil {
-		setValues = append(setValues, fmt.Sprintf("reward_id=$%d", argId))
-		args = append(args, *promocode.Reward_id)
-		argId++
-	}
-
-	if promocode.Expires != nil {
-		setValues = append(setValues, fmt.Sprintf("expires=$%d", argId))
-		args = append(args, *promocode.Expires)
-		argId++
-	}
-
-	if promocode.Max_uses != nil {
-		setValues = append(setValues, fmt.Sprintf("max_uses=$%d", argId))
-		args = append(args, *promocode.Max_uses)
-		argId++
-	}
-
-	if promocode.Remain_uses != nil {
-		setValues = append(setValues, fmt.Sprintf("remain_uses=$%d", argId))
-		args = append(args, *promocode.Remain_uses)
-		argId++
-	}
-
-	rj, _ := json.Marshal(promocode)
-	log.Printf("repository-promocode: UpdatePromocode promocode: %s\n", string(rj))
-
-	setQuery := strings.Join(setValues, ", ")
-
-	var itemId int
-	query = fmt.Sprintf(`UPDATE %s promocode SET %s WHERE promocode.id = $%d RETURNING id`,
-		promocodeTable, setQuery, argId)
-
-	args = append(args, *promocode.Id)
-	row := tx.QueryRow(query, args...)
-	err = row.Scan(&itemId)
+	_, err = tx.Exec(query, *promocode.Remain_uses, *promocode.Id)
 	if err != nil {
 		tx.Rollback()
 		return err
-	}
-
-	var s time.Time
-	if promocode.Expires != nil && s.Unix() == promocode.Expires.Unix() {
-		query = fmt.Sprintf("UPDATE %s SET expires = NULL WHERE id = $1", promocodeTable)
-		_, err = tx.Exec(query, itemId)
-
-		if err != nil {
-			tx.Rollback()
-			return err
-		}
 	}
 
 	return tx.Commit()
