@@ -38,7 +38,9 @@ function App() {
       console.log(json);
 
      if (json.id) {
-        setMessage("Промокод применен 😊. Этот промокод " + json.description.toLowerCase())
+          let msg = "Промокод применен 😊"
+          msg += json.description.length > 0 ? " Промокод " + json.description.toLowerCase() : "."
+        setMessage(msg)
       } else {
         switch (json.status) {
           case 0:
