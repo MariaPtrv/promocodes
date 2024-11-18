@@ -12,15 +12,15 @@ import (
 	"github.com/jmoiron/sqlx"
 )
 
-type PromocodePostgres struct {
+type PromocodesPostgres struct {
 	db *sqlx.DB
 }
 
-func NewPromocodePostgres(db *sqlx.DB) *PromocodePostgres {
-	return &PromocodePostgres{db: db}
+func NewPromocodesPostgres(db *sqlx.DB) *PromocodesPostgres {
+	return &PromocodesPostgres{db: db}
 }
 
-func (p *PromocodePostgres) GetPromocode(promocode t.Promocode) (t.Promocode, error) {
+func (p *PromocodesPostgres) GetPromocode(promocode t.Promocode) (t.Promocode, error) {
 	tx, err := p.db.Begin()
 	if err != nil {
 		return t.Promocode{}, err
@@ -41,7 +41,7 @@ func (p *PromocodePostgres) GetPromocode(promocode t.Promocode) (t.Promocode, er
 	return prwcd, tx.Commit()
 }
 
-func (p *PromocodePostgres) UpdatePromocode(promocode t.Promocode) (int, error) {
+func (p *PromocodesPostgres) UpdatePromocode(promocode t.Promocode) (int, error) {
 	tx, err := p.db.Begin()
 	if err != nil {
 		return 0, err
@@ -110,4 +110,63 @@ func (p *PromocodePostgres) UpdatePromocode(promocode t.Promocode) (int, error) 
 	}
 
 	return itemId, tx.Commit()
+}
+
+func (p *PromocodesPostgres) NewRewardsRecord(record t.RewardsRecord) error {
+	tx, err := p.db.Begin()
+	if err != nil {
+		return err
+	}
+
+	log.Printf("repository-rewards-record: NewRewardsRecord\n")
+
+	query := fmt.Sprintf("INSERT INTO %s (promocode_id, user_id, \"timestamp\") VALUES ($1, $2, $3)", rewardsTable)
+	_, err = tx.Exec(query, record.Promocode_id, record.User_id, record.Timestamp)
+	if err != nil {
+		tx.Rollback()
+		return err
+	}
+
+	return tx.Commit()
+}
+
+func (p *PromocodesPostgres) GetRewardsRecordByUserId(record t.RewardsRecord) (t.RewardsRecord, error) {
+	tx, err := p.db.Begin()
+	if err != nil {
+		return t.RewardsRecord{}, err
+	}
+
+	log.Printf("repository-rewards-record: GetRewardsRecordByUserId\n")
+
+	query := fmt.Sprintf("SELECT * FROM %s WHERE user_id = $1 AND promocode_id = $2", rewardsTable)
+
+	var rdb t.RewardsRecord
+
+	err = p.db.Get(&rdb, query, record.User_id, record.Promocode_id)
+	if err != nil {
+		tx.Rollback()
+		return t.RewardsRecord{}, err
+	}
+	return rdb, tx.Commit()
+}
+
+func (p *PromocodesPostgres) GetRewardById(reward t.Reward) (t.Reward, error) {
+	tx, err := p.db.Begin()
+	if err != nil {
+		return t.Reward{}, err
+	}
+
+	log.Printf("repository-reward: GetRewardById reward id: %d\n", reward.Id)
+
+	query := fmt.Sprintf("SELECT * FROM %s WHERE id = $1", rewardTable)
+
+	var rdb t.Reward
+
+	err = p.db.Get(&rdb, query, reward.Id)
+	if err != nil {
+		tx.Rollback()
+		return t.Reward{}, err
+	}
+
+	return rdb, tx.Commit()
 }

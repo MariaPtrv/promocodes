@@ -13,30 +13,20 @@ const (
 	promocodeTable = "promocode"
 )
 
-type Promocode interface {
-	GetPromocode(p t.Promocode) (t.Promocode, error)
-	UpdatePromocode(p t.Promocode) (int, error)
-}
-
-type Reward interface {
+type Promocodes interface {
+	GetPromocode(t.Promocode) (t.Promocode, error)
+	UpdatePromocode(t.Promocode) (int, error)
+	NewRewardsRecord(t.RewardsRecord) error
+	GetRewardsRecordByUserId(t.RewardsRecord) (t.RewardsRecord, error)
 	GetRewardById(t.Reward) (t.Reward, error)
 }
 
-type Rewards interface {
-	NewRewardsRecord(t.RewardsRecord) error
-	GetRewardsRecordByUserId(t.RewardsRecord) (t.RewardsRecord, error)
-}
-
 type Repository struct {
-	Promocode
-	Reward
-	Rewards
+	Promocodes
 }
 
 func NewRepository(db *sqlx.DB) *Repository {
 	return &Repository{
-		Reward:    NewRewardPostgres(db),
-		Promocode: NewPromocodePostgres(db),
-		Rewards:   NewRewardsPostgres(db),
+		Promocodes: NewPromocodesPostgres(db),
 	}
 }

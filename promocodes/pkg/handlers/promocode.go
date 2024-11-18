@@ -26,7 +26,7 @@ func (h *Handler) UsePromocode(c echo.Context) error {
 		return newErrorResponse(http.StatusBadRequest, "promocode can't be empty")
 	}
 
-	prmcd, err := h.services.Promocode.GetPromocode(promocode)
+	prmcd, err := h.services.Promocodes.GetPromocode(promocode)
 	if err != nil {
 		return newErrorResponse(http.StatusBadRequest, err.Error())
 	}
@@ -45,7 +45,7 @@ func (h *Handler) UsePromocode(c echo.Context) error {
 	var userRecordsPromocode t.RewardsRecord
 
 	if prmcd.Id != nil {
-		userRecordsPromocode, err = h.services.Rewards.GetRewardsRecordByUserId(t.RewardsRecord{
+		userRecordsPromocode, err = h.services.Promocodes.GetRewardsRecordByUserId(t.RewardsRecord{
 			User_id:      &p.User_id,
 			Promocode_id: prmcd.Id,
 		})
@@ -75,7 +75,7 @@ func (h *Handler) UsePromocode(c echo.Context) error {
 		Id: *prmcd.Reward_id,
 	}
 
-	rwrd, err := h.services.Reward.GetRewardById(reward)
+	rwrd, err := h.services.Promocodes.GetRewardById(reward)
 	if err != nil {
 		return newErrorResponse(http.StatusBadRequest, err.Error())
 	}
@@ -86,13 +86,13 @@ func (h *Handler) UsePromocode(c echo.Context) error {
 		Timestamp:    &now,
 	}
 
-	err = h.services.Rewards.NewRewardsRecord(rewardsRecord)
+	err = h.services.Promocodes.NewRewardsRecord(rewardsRecord)
 	if err != nil {
 		return newErrorResponse(http.StatusBadRequest, err.Error())
 	}
 
 	remain_uses := *prmcd.Remain_uses - 1
-	_, err = h.services.Promocode.UpdatePromocode(t.Promocode{
+	_, err = h.services.Promocodes.UpdatePromocode(t.Promocode{
 		Id:          prmcd.Id,
 		Remain_uses: &(remain_uses),
 	})
