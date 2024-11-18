@@ -26,7 +26,7 @@ func (p *PromocodesPostgres) GetPromocode(promocode t.Promocode) (t.Promocode, e
 		return t.Promocode{}, err
 	}
 
-	log.Printf("repository-promocode: GetPromocode promocode %d\n", promocode.Promocode)
+	log.Printf("repository-promocodes: GetPromocode promocode %d\n", promocode.Promocode)
 
 	query := fmt.Sprintf("SELECT * FROM %s WHERE promocode = $1", promocodeTable)
 
@@ -41,10 +41,62 @@ func (p *PromocodesPostgres) GetPromocode(promocode t.Promocode) (t.Promocode, e
 	return prwcd, tx.Commit()
 }
 
-func (p *PromocodesPostgres) UpdatePromocode(promocode t.Promocode) (int, error) {
+func (p *PromocodesPostgres) GetRewardsRecordByUserId(record t.RewardsRecord) (t.RewardsRecord, error) {
 	tx, err := p.db.Begin()
 	if err != nil {
-		return 0, err
+		return t.RewardsRecord{}, err
+	}
+
+	log.Printf("repository-promocodes: GetRewardsRecordByUserId\n")
+
+	query := fmt.Sprintf("SELECT * FROM %s WHERE user_id = $1 AND promocode_id = $2", rewardsTable)
+
+	var rdb t.RewardsRecord
+
+	err = p.db.Get(&rdb, query, record.User_id, record.Promocode_id)
+	if err != nil {
+		tx.Rollback()
+		return t.RewardsRecord{}, err
+	}
+	return rdb, tx.Commit()
+}
+
+func (p *PromocodesPostgres) GetRewardById(reward t.Reward) (t.Reward, error) {
+	tx, err := p.db.Begin()
+	if err != nil {
+		return t.Reward{}, err
+	}
+
+	log.Printf("repository-promocodes: GetRewardById reward id: %d\n", reward.Id)
+
+	query := fmt.Sprintf("SELECT * FROM %s WHERE id = $1", rewardTable)
+
+	var rdb t.Reward
+
+	err = p.db.Get(&rdb, query, reward.Id)
+	if err != nil {
+		tx.Rollback()
+		return t.Reward{}, err
+	}
+
+	return rdb, tx.Commit()
+}
+
+
+
+func (p *PromocodesPostgres) ApplyPromocodeAction(record t.RewardsRecord, promocode t.Promocode) error {
+	tx, err := p.db.Begin()
+	if err != nil {
+		return err
+	}
+
+	log.Printf("repository-promocodes: ApplyPromocodeAction %d   %s\n", *record.Id, *promocode.Promocode)
+
+	query := fmt.Sprintf("INSERT INTO %s (promocode_id, user_id, \"timestamp\") VALUES ($1, $2, $3)", rewardsTable)
+	_, err = tx.Exec(query, record.Promocode_id, record.User_id, record.Timestamp)
+	if err != nil {
+		tx.Rollback()
+		return err
 	}
 
 	setValues := make([]string, 0)
@@ -87,7 +139,7 @@ func (p *PromocodesPostgres) UpdatePromocode(promocode t.Promocode) (int, error)
 	setQuery := strings.Join(setValues, ", ")
 
 	var itemId int
-	query := fmt.Sprintf(`UPDATE %s promocode SET %s WHERE promocode.id = $%d RETURNING id`,
+	query = fmt.Sprintf(`UPDATE %s promocode SET %s WHERE promocode.id = $%d RETURNING id`,
 		promocodeTable, setQuery, argId)
 
 	args = append(args, *promocode.Id)
@@ -95,7 +147,7 @@ func (p *PromocodesPostgres) UpdatePromocode(promocode t.Promocode) (int, error)
 	err = row.Scan(&itemId)
 	if err != nil {
 		tx.Rollback()
-		return 0, err
+		return err
 	}
 
 	var s time.Time
@@ -105,68 +157,9 @@ func (p *PromocodesPostgres) UpdatePromocode(promocode t.Promocode) (int, error)
 
 		if err != nil {
 			tx.Rollback()
-			return 0, err
+			return err
 		}
 	}
 
-	return itemId, tx.Commit()
-}
-
-func (p *PromocodesPostgres) NewRewardsRecord(record t.RewardsRecord) error {
-	tx, err := p.db.Begin()
-	if err != nil {
-		return err
-	}
-
-	log.Printf("repository-rewards-record: NewRewardsRecord\n")
-
-	query := fmt.Sprintf("INSERT INTO %s (promocode_id, user_id, \"timestamp\") VALUES ($1, $2, $3)", rewardsTable)
-	_, err = tx.Exec(query, record.Promocode_id, record.User_id, record.Timestamp)
-	if err != nil {
-		tx.Rollback()
-		return err
-	}
-
 	return tx.Commit()
-}
-
-func (p *PromocodesPostgres) GetRewardsRecordByUserId(record t.RewardsRecord) (t.RewardsRecord, error) {
-	tx, err := p.db.Begin()
-	if err != nil {
-		return t.RewardsRecord{}, err
-	}
-
-	log.Printf("repository-rewards-record: GetRewardsRecordByUserId\n")
-
-	query := fmt.Sprintf("SELECT * FROM %s WHERE user_id = $1 AND promocode_id = $2", rewardsTable)
-
-	var rdb t.RewardsRecord
-
-	err = p.db.Get(&rdb, query, record.User_id, record.Promocode_id)
-	if err != nil {
-		tx.Rollback()
-		return t.RewardsRecord{}, err
-	}
-	return rdb, tx.Commit()
-}
-
-func (p *PromocodesPostgres) GetRewardById(reward t.Reward) (t.Reward, error) {
-	tx, err := p.db.Begin()
-	if err != nil {
-		return t.Reward{}, err
-	}
-
-	log.Printf("repository-reward: GetRewardById reward id: %d\n", reward.Id)
-
-	query := fmt.Sprintf("SELECT * FROM %s WHERE id = $1", rewardTable)
-
-	var rdb t.Reward
-
-	err = p.db.Get(&rdb, query, reward.Id)
-	if err != nil {
-		tx.Rollback()
-		return t.Reward{}, err
-	}
-
-	return rdb, tx.Commit()
 }

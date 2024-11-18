@@ -15,10 +15,9 @@ const (
 
 type Promocodes interface {
 	GetPromocode(t.Promocode) (t.Promocode, error)
-	UpdatePromocode(t.Promocode) (int, error)
-	NewRewardsRecord(t.RewardsRecord) error
 	GetRewardsRecordByUserId(t.RewardsRecord) (t.RewardsRecord, error)
-	GetRewardById(t.Reward) (t.Reward, error)
+	GetRewardById(t.Reward) (t.Reward, error)	
+	ApplyPromocodeAction(t.RewardsRecord, t.Promocode) error
 }
 
 type Repository struct {

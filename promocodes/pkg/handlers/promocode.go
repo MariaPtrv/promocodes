@@ -86,16 +86,12 @@ func (h *Handler) UsePromocode(c echo.Context) error {
 		Timestamp:    &now,
 	}
 
-	err = h.services.Promocodes.NewRewardsRecord(rewardsRecord)
-	if err != nil {
-		return newErrorResponse(http.StatusBadRequest, err.Error())
-	}
-
 	remain_uses := *prmcd.Remain_uses - 1
-	_, err = h.services.Promocodes.UpdatePromocode(t.Promocode{
+	err = h.services.Promocodes.ApplyPromocodeAction(rewardsRecord, t.Promocode{
 		Id:          prmcd.Id,
 		Remain_uses: &(remain_uses),
 	})
+
 	if err != nil {
 		return newErrorResponse(http.StatusBadRequest, err.Error())
 	}
