@@ -1,11 +1,8 @@
 package repository
 
 import (
-	"encoding/json"
 	"fmt"
 	t "promocodes"
-	"strings"
-	"time"
 
 	"log"
 
@@ -82,15 +79,13 @@ func (p *PromocodesPostgres) GetRewardById(reward t.Reward) (t.Reward, error) {
 	return rdb, tx.Commit()
 }
 
-
-
 func (p *PromocodesPostgres) ApplyPromocodeAction(record t.RewardsRecord, promocode t.Promocode) error {
 	tx, err := p.db.Begin()
 	if err != nil {
 		return err
 	}
 
-	log.Printf("repository-promocodes: ApplyPromocodeAction %d   %s\n", *record.Id, *promocode.Promocode)
+	log.Printf("repository-promocodes: ApplyPromocodeAction")
 
 	query := fmt.Sprintf("INSERT INTO %s (promocode_id, user_id, \"timestamp\") VALUES ($1, $2, $3)", rewardsTable)
 	_, err = tx.Exec(query, record.Promocode_id, record.User_id, record.Timestamp)
