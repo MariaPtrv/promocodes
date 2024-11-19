@@ -87,7 +87,7 @@ func (h *Handler) DeletePromocode(c echo.Context) error {
 		Promocode: r.Promocode,
 	}
 
-	log.Printf("handler-promocode: DeletePromocode promocode id: %d\n", *promocode.Id)
+	log.Printf("handler-promocode: DeletePromocode promocode id: %s\n", *promocode.Promocode)
 	err := h.services.Promocode.DeletePromocode(promocode)
 	if err != nil {
 		return newErrorResponse(http.StatusBadRequest, err.Error())
