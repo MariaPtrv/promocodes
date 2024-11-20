@@ -34,10 +34,20 @@ func (h *Handler) UsePromocode(c echo.Context) error {
 	now := time.Now()
 
 	if prmcd.Expires != nil && prmcd.Expires.Before(now) {
-		log.Printf("repository-promocode: UpdatePromocode promocode: %s\n", "promocode has been expired")
+		log.Printf("repository-promocode: UsePromocode promocode: %s\n", "promocode has been expired")
 		resp := usePromocodeResp{
 			Message: "promocod has been expired",
 			Status:  PromocodeExpired,
+		}
+		return c.JSON(200, resp)
+	}
+
+	if prmcd.Remain_uses != nil && *prmcd.Remain_uses < 1 {
+		log.Printf("repository-promocode: UsePromocode promocode: %s\n", "promocode can no longer be applied due to the number of uses")
+
+		resp := usePromocodeResp{
+			Message: "promocode can no longer be applied due to the number of uses",
+			Status:  PromocodeUsedTooManyTimes,
 		}
 		return c.JSON(200, resp)
 	}
@@ -51,7 +61,7 @@ func (h *Handler) UsePromocode(c echo.Context) error {
 		})
 
 		if userRecordsPromocode.Id != nil {
-			log.Printf("repository-promocode: UpdatePromocode promocode: %s\n", "promocode has already been used")
+			log.Printf("repository-promocode: UsePromocode promocode: %s\n", "promocode has already been used")
 			resp := usePromocodeResp{
 				Message: "promocode has already been used",
 				Status:  PromocodeAlreadyUsed,
@@ -59,16 +69,6 @@ func (h *Handler) UsePromocode(c echo.Context) error {
 			return c.JSON(200, resp)
 		}
 
-	}
-
-	if prmcd.Remain_uses != nil && *prmcd.Remain_uses < 1 {
-		log.Printf("repository-promocode: UpdatePromocode promocode: %s\n", "promocode can no longer be applied due to the number of uses")
-
-		resp := usePromocodeResp{
-			Message: "promocode can no longer be applied due to the number of uses",
-			Status:  PromocodeUsedTooManyTimes,
-		}
-		return c.JSON(200, resp)
 	}
 
 	reward := t.Reward{
