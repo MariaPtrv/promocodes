@@ -53,24 +53,15 @@ func (p *PromocodePostgres) CreatePromocode(promocode t.Promocode) (int, error) 
 }
 
 func (p *PromocodePostgres) GetPromocodeById(promocode t.Promocode) (t.Promocode, error) {
-	tx, err := p.db.Begin()
-	if err != nil {
-		return t.Promocode{}, err
-	}
-
 	log.Printf("repository-promocode: GetPromocodeById promocode id: %d\n", promocode.Id)
 
 	query := fmt.Sprintf("SELECT * FROM %s WHERE id = $1", promocodeTable)
 
-	var prwcd t.Promocode
+	prwcd := t.Promocode{}
 
-	err = p.db.Get(&prwcd, query, promocode.Id)
-	if err != nil {
-		tx.Rollback()
-		return t.Promocode{}, err
-	}
+	err := p.db.Get(&prwcd, query, promocode.Id)
 
-	return prwcd, tx.Commit()
+	return prwcd, err
 }
 
 func (p *PromocodePostgres) UpdatePromocode(promocode t.Promocode) (int, error) {
@@ -145,42 +136,24 @@ func (p *PromocodePostgres) UpdatePromocode(promocode t.Promocode) (int, error) 
 }
 
 func (p *PromocodePostgres) DeletePromocode(promocode t.Promocode) error {
-	tx, err := p.db.Begin()
-	if err != nil {
-		return err
-	}
-
 	rj, _ := json.Marshal(promocode)
 	log.Printf("repository-promocode: DeletePromocode promocode: %s\n", string(rj))
 
 	query := fmt.Sprintf("DELETE FROM %s WHERE promocode = $1", promocodeTable)
-	_, err = tx.Exec(query, promocode.Promocode)
+	_, err := p.db.Exec(query, promocode.Promocode)
 
-	if err != nil {
-		tx.Rollback()
-		return err
-	}
-
-	return tx.Commit()
+	return err
 }
 
 func (p *PromocodePostgres) GetPromocodes() ([]t.Promocode, error) {
-	tx, err := p.db.Begin()
-	if err != nil {
-		return []t.Promocode{}, err
-	}
 
 	log.Printf("repository-promocode: GetPromocodes\n")
 
 	query := fmt.Sprintf("SELECT * FROM %s", promocodeTable)
 
-	var rewards []t.Promocode
+	rewards := []t.Promocode{}
 
-	err = p.db.Select(&rewards, query)
-	if err != nil {
-		tx.Rollback()
-		return []t.Promocode{}, err
-	}
+	err := p.db.Select(&rewards, query)
 
-	return rewards, tx.Commit()
+	return rewards, err
 }

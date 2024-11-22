@@ -81,22 +81,13 @@ func (r *RewardPostgres) GetRewardById(reward t.Reward) (t.Reward, error) {
 }
 
 func (r *RewardPostgres) GetRewards() ([]t.Reward, error) {
-	tx, err := r.db.Begin()
-	if err != nil {
-		return []t.Reward{}, err
-	}
-
 	log.Printf("repository-rewards: GetRewards\n")
 
 	query := fmt.Sprintf("SELECT * FROM %s", rewardTable)
 
-	var rewards []t.Reward
+	rewards := []t.Reward{}
 
-	err = r.db.Select(&rewards, query)
-	if err != nil {
-		tx.Rollback()
-		return []t.Reward{}, err
-	}
+	err := r.db.Select(&rewards, query)
 
-	return rewards, tx.Commit()
+	return rewards, err
 }
