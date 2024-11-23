@@ -16,7 +16,7 @@ CREATE TABLE promocode (
 
 CREATE TABLE rewards (
     id serial PRIMARY KEY,
-    user_id integer NOT NULL,
+    user_id integer,
     promocode_id integer REFERENCES promocode (id) ON DELETE CASCADE,
     "timestamp" timestamp without time zone NOT NULL
 );
