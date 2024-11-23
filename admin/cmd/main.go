@@ -83,13 +83,11 @@ func main() {
 
 	}
 
-	defer func() {
-		if err := db.Close(); err != nil {
-			e.Logger.Fatal("error occured while db shutting down:", err)
-		} else {
-			e.Logger.Info("db shut down")
-		}
-	}()
+	if err := db.Close(); err != nil {
+		e.Logger.Fatal("error occured while db shutting down:", err)
+	} else {
+		e.Logger.Info("db shut down")
+	}
 }
 
 func initConfig() error {
