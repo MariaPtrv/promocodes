@@ -1,4 +1,4 @@
-version: 'v2.29.2-desktop.2'
+version: '3.9'
 services:
   db:
     container_name: postgres
