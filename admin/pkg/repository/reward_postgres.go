@@ -77,7 +77,13 @@ func (r *RewardPostgres) GetRewardById(reward t.Reward) (t.Reward, error) {
 		return t.Reward{}, err
 	}
 
-	return rdb, tx.Commit()
+	err = tx.Commit()
+	if err != nil {
+		tx.Rollback()
+		return rdb, err
+	}
+
+	return rdb, nil
 }
 
 func (r *RewardPostgres) GetRewards() ([]t.Reward, error) {

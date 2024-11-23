@@ -49,7 +49,13 @@ func (p *PromocodePostgres) CreatePromocode(promocode t.Promocode) (int, error) 
 		}
 	}
 
-	return itemId, tx.Commit()
+	err = tx.Commit()
+	if err != nil {
+		tx.Rollback()
+		return itemId, err
+	}
+
+	return itemId, nil
 }
 
 func (p *PromocodePostgres) GetPromocodeById(promocode t.Promocode) (t.Promocode, error) {
@@ -136,7 +142,13 @@ func (p *PromocodePostgres) UpdatePromocode(promocode t.Promocode) (int, error) 
 		}
 	}
 
-	return itemId, tx.Commit()
+	err = tx.Commit()
+	if err != nil {
+		tx.Rollback()
+		return itemId, err
+	}
+
+	return itemId, nil
 }
 
 func (p *PromocodePostgres) DeletePromocode(promocode t.Promocode) error {

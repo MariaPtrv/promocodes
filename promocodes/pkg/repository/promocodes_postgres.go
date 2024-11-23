@@ -89,5 +89,11 @@ func (p *PromocodesPostgres) ApplyPromocodeAction(record t.RewardsRecord, promoc
 		return err
 	}
 
-	return tx.Commit()
+	err = tx.Commit()
+	if err != nil {
+		tx.Rollback()
+		return err
+	}
+
+	return err
 }
