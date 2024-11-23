@@ -9,7 +9,6 @@ import (
 	"net/http"
 	"os"
 	"os/signal"
-	"time"
 
 	"github.com/joho/godotenv"
 	"github.com/labstack/echo/v4"
@@ -53,6 +52,9 @@ func main() {
 		log.Fatalf("error occured while connecting DB: %s", err.Error())
 	}
 
+	ctxBg, cancel := context.WithCancel(context.Background())
+	defer cancel()
+
 	e := echo.New()
 	e.Use(middleware.LoggerWithConfig(middleware.LoggerConfig{
 		Format: "${time_rfc3339} method: ${method} uri: ${uri} status: ${status} ${error}\n",
@@ -76,11 +78,9 @@ func main() {
 	}()
 
 	<-ctx.Done()
-	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
-	defer cancel()
-	if err := e.Shutdown(ctx); err != nil {
-		e.Logger.Fatal(err)
 
+	if err := e.Shutdown(ctxBg); err != nil {
+		e.Logger.Fatal(err)
 	}
 
 	if err := db.Close(); err != nil {
