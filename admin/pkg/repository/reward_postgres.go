@@ -85,9 +85,13 @@ func (r *RewardPostgres) GetRewards() ([]t.Reward, error) {
 
 	query := fmt.Sprintf("SELECT * FROM %s", rewardTable)
 
-	rewards := []t.Reward{}
+	var rewards []t.Reward
 
 	err := r.db.Select(&rewards, query)
 
-	return rewards, err
+	if err != nil {
+		return []t.Reward{}, err
+	}
+
+	return rewards, nil
 }

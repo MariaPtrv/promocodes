@@ -57,11 +57,15 @@ func (p *PromocodePostgres) GetPromocodeById(promocode t.Promocode) (t.Promocode
 
 	query := fmt.Sprintf("SELECT * FROM %s WHERE id = $1", promocodeTable)
 
-	prwcd := t.Promocode{}
+	var prwcd t.Promocode
 
 	err := p.db.Get(&prwcd, query, promocode.Id)
 
-	return prwcd, err
+	if err != nil {
+		return t.Promocode{}, err
+	}
+
+	return prwcd, nil
 }
 
 func (p *PromocodePostgres) UpdatePromocode(promocode t.Promocode) (int, error) {
@@ -151,9 +155,13 @@ func (p *PromocodePostgres) GetPromocodes() ([]t.Promocode, error) {
 
 	query := fmt.Sprintf("SELECT * FROM %s", promocodeTable)
 
-	rewards := []t.Promocode{}
+	var rewards []t.Promocode
 
 	err := p.db.Select(&rewards, query)
 
-	return rewards, err
+	if err != nil {
+		return []t.Promocode{}, err
+	}
+
+	return rewards, nil
 }

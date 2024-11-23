@@ -22,9 +22,13 @@ func (p *PromocodesPostgres) GetPromocode(promocode t.Promocode) (t.Promocode, e
 
 	query := fmt.Sprintf("SELECT * FROM %s WHERE promocode = $1", promocodeTable)
 
-	prwcd := t.Promocode{}
+	var prwcd t.Promocode
 
 	err := p.db.Get(&prwcd, query, promocode.Promocode)
+
+	if err != nil {
+		return t.Promocode{}, err
+	}
 
 	return prwcd, err
 }
@@ -34,9 +38,13 @@ func (p *PromocodesPostgres) GetRewardsRecordByUserId(record t.RewardsRecord) (t
 
 	query := fmt.Sprintf("SELECT * FROM %s WHERE user_id = $1 AND promocode_id = $2", rewardsTable)
 
-	rdb := t.RewardsRecord{}
+	var rdb t.RewardsRecord
 
 	err := p.db.Get(&rdb, query, record.User_id, record.Promocode_id)
+
+	if err != nil {
+		return t.RewardsRecord{}, err
+	}
 
 	return rdb, err
 }
@@ -46,9 +54,13 @@ func (p *PromocodesPostgres) GetRewardById(reward t.Reward) (t.Reward, error) {
 
 	query := fmt.Sprintf("SELECT * FROM %s WHERE id = $1", rewardTable)
 
-	rdb := t.Reward{}
+	var rdb t.Reward
 
 	err := p.db.Get(&rdb, query, reward.Id)
+
+	if err != nil {
+		return t.Reward{}, err
+	}
 
 	return rdb, err
 }
